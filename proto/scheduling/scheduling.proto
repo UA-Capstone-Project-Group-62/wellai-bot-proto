@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package wellai_bot.scheduling;
+
+import "google/protobuf/timestamp.proto";
+
+import "proto/common/common.proto";
+
+message Schedule {
+	string user_id = 1;
+	string clinic_id = 2;
+	google.protobuf.Timestamp start_time = 4;
+	google.protobuf.Timestamp end_time = 5;
+}
+
+// Scheduling Service
+service SchedulingService {
+	// Schedule an appointment
+	rpc Schedule (Schedule) returns (wellai_bot.common.Response);
+}

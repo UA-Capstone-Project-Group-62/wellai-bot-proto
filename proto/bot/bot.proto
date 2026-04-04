@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package wellai_bot.bot;
+
+import "proto/common/common.proto";
+
+// Message sending to user
+message Message {
+	string user_id = 1;
+	string content = 2;
+}
+
+// WhatsApp Bot Service
+service BotService {
+	// Send message to user
+	rpc Send (Message) returns (wellai_bot.common.Response);
+}

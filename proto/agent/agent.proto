@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package wellai_bot.agent;
+
+import "proto/common/common.proto";
+
+// Message sent by user
+message Message {
+	string user_id = 1;
+	string content = 2;
+}
+
+// AI Agent Service
+service AgentService {
+	// Receive message from user (send by bot service)
+	rpc Receive (Message) returns (wellai_bot.common.Response);
+}
