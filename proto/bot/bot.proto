@@ -13,5 +13,5 @@ message Message {
 // WhatsApp Bot Service
 service BotService {
 	// Send message to user
-	rpc Send (Message) returns (wellai_bot.common.Response);
+	rpc Send(Message) returns (wellai_bot.common.Response);
 }

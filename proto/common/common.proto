@@ -4,6 +4,6 @@ package wellai_bot.common;
 
 // Common response message
 message Response {
-    bool success = 1;
-    string message = 2;
+	bool success = 1;
+	string message = 2;
 }

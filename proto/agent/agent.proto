@@ -13,5 +13,5 @@ message Message {
 // AI Agent Service
 service AgentService {
 	// Receive message from user (send by bot service)
-	rpc Receive (Message) returns (wellai_bot.common.Response);
+	rpc Receive(Message) returns (wellai_bot.common.Response);
 }
