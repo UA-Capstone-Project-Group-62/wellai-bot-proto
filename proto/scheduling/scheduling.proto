@@ -6,15 +6,35 @@ import "google/protobuf/timestamp.proto";
 
 import "proto/common/common.proto";
 
-message Schedule {
+message ScheduleRequest {
 	string user_id = 1;
 	string clinic_id = 2;
 	google.protobuf.Timestamp start_time = 4;
 	google.protobuf.Timestamp end_time = 5;
 }
 
+message ScheduleResponse {
+	string schedule_id = 1;
+}
+
+message QueryRequest {
+	string user_id = 1;
+	string clinic_id = 2;
+}
+message QueryResponse {
+	// TODO
+}
+
+message CancelRequest {
+	string schedule_id = 1;
+}
+
 // Scheduling Service
 service SchedulingService {
 	// Schedule an appointment
-	rpc Schedule (Schedule) returns (wellai_bot.common.Response);
+	rpc Schedule(ScheduleRequest) returns (ScheduleResponse);
+	// Query available time slots for a clinic
+	rpc Query(QueryRequest) returns (QueryResponse);
+	// Cancel an appointment
+	rpc Cancel(CancelRequest) returns (wellai_bot.common.Response);
 }
