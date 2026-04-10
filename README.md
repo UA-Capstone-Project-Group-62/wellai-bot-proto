@@ -5,15 +5,36 @@
 Add this repository as a git submodule
 
 ```bash
-git submodule add git@github.com:UA-Capstone-Project-Group-62/wellai-bot-proto.git <path>
+git submodule add git@github.com:UA-Capstone-Project-Group-62/wellai-bot-proto.git proto
 ```
 
-Replace `<repo-url>` with this repository URL and `<path>` with the folder where the submodule should live in your service.
+This will create a `proto` folder in your repository containing the protobuf definitions and generated code.
 
 When this repository changes, update the submodule in the consuming service:
 
 ```bash
-git submodule update --remote --merge <path>
+git submodule update --remote --merge proto
+```
+
+### Python Import
+
+With uv. You need to add
+
+```toml
+[project]
+dependencies = [
+    # other dependencies...
+    "proto"
+]
+
+[tool.uv.sources]
+proto = { path = "proto" }
+```
+
+Then you can import generated Python code like:
+
+```python
+from proto.feature import your_proto_pb2
 ```
 
 ## Generate Code
