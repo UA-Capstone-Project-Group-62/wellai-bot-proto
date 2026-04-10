@@ -1,7 +1,7 @@
 PROTO_DIR := proto
 PROTO_FILES := $(shell find $(PROTO_DIR) -name '*.proto' | sort)
-PY_OUT := gen/python
-TS_OUT := gen/typescript
+PY_OUT := gen/py
+TS_OUT := gen/ts
 PROTOC_GEN_TS_PROTO := $(shell pnpm exec which protoc-gen-ts_proto)
 
 .PHONY: python typescript py ts all clean
@@ -13,6 +13,8 @@ python:
 	@uv run python -m grpc_tools.protoc -I . \
 		--python_out=$(PY_OUT) \
 		--grpc_python_out=$(PY_OUT) \
+		--mypy_out=$(PY_OUT) \
+		--mypy_grpc_out=$(PY_OUT) \
 		$(PROTO_FILES)
 
 ts: typescript
