@@ -28,6 +28,17 @@ export interface Message {
   content: string;
 }
 
+/** Request to get latest messages */
+export interface GetMessagesRequest {
+  userId: string;
+  count: number;
+}
+
+/** Response containing latest messages */
+export interface GetMessagesResponse {
+  messages: Message[];
+}
+
 function createBaseMessage(): Message {
   return { userId: "", content: "" };
 }
@@ -108,6 +119,146 @@ export const Message: MessageFns<Message> = {
   },
 };
 
+function createBaseGetMessagesRequest(): GetMessagesRequest {
+  return { userId: "", count: 0 };
+}
+
+export const GetMessagesRequest: MessageFns<GetMessagesRequest> = {
+  encode(message: GetMessagesRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== "") {
+      writer.uint32(10).string(message.userId);
+    }
+    if (message.count !== 0) {
+      writer.uint32(16).int32(message.count);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetMessagesRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetMessagesRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.count = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetMessagesRequest {
+    return {
+      userId: isSet(object.userId)
+        ? globalThis.String(object.userId)
+        : isSet(object.user_id)
+        ? globalThis.String(object.user_id)
+        : "",
+      count: isSet(object.count) ? globalThis.Number(object.count) : 0,
+    };
+  },
+
+  toJSON(message: GetMessagesRequest): unknown {
+    const obj: any = {};
+    if (message.userId !== "") {
+      obj.userId = message.userId;
+    }
+    if (message.count !== 0) {
+      obj.count = Math.round(message.count);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetMessagesRequest>, I>>(base?: I): GetMessagesRequest {
+    return GetMessagesRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetMessagesRequest>, I>>(object: I): GetMessagesRequest {
+    const message = createBaseGetMessagesRequest();
+    message.userId = object.userId ?? "";
+    message.count = object.count ?? 0;
+    return message;
+  },
+};
+
+function createBaseGetMessagesResponse(): GetMessagesResponse {
+  return { messages: [] };
+}
+
+export const GetMessagesResponse: MessageFns<GetMessagesResponse> = {
+  encode(message: GetMessagesResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.messages) {
+      Message.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetMessagesResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetMessagesResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.messages.push(Message.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetMessagesResponse {
+    return {
+      messages: globalThis.Array.isArray(object?.messages) ? object.messages.map((e: any) => Message.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: GetMessagesResponse): unknown {
+    const obj: any = {};
+    if (message.messages?.length) {
+      obj.messages = message.messages.map((e) => Message.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetMessagesResponse>, I>>(base?: I): GetMessagesResponse {
+    return GetMessagesResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetMessagesResponse>, I>>(object: I): GetMessagesResponse {
+    const message = createBaseGetMessagesResponse();
+    message.messages = object.messages?.map((e) => Message.fromPartial(e)) || [];
+    return message;
+  },
+};
+
 /** WhatsApp Bot Service */
 export type BotServiceService = typeof BotServiceService;
 export const BotServiceService = {
@@ -121,11 +272,35 @@ export const BotServiceService = {
     responseSerialize: (value: Response): Buffer => Buffer.from(Response.encode(value).finish()),
     responseDeserialize: (value: Buffer): Response => Response.decode(value),
   },
+  /** Get n latest messages for a user */
+  getMessages: {
+    path: "/wellai_bot.bot.BotService/GetMessages" as const,
+    requestStream: false as const,
+    responseStream: false as const,
+    requestSerialize: (value: GetMessagesRequest): Buffer => Buffer.from(GetMessagesRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): GetMessagesRequest => GetMessagesRequest.decode(value),
+    responseSerialize: (value: GetMessagesResponse): Buffer => Buffer.from(GetMessagesResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): GetMessagesResponse => GetMessagesResponse.decode(value),
+  },
+  /** Notify admin to take human handoff for a user */
+  notifyHandoff: {
+    path: "/wellai_bot.bot.BotService/NotifyHandoff" as const,
+    requestStream: false as const,
+    responseStream: false as const,
+    requestSerialize: (value: Message): Buffer => Buffer.from(Message.encode(value).finish()),
+    requestDeserialize: (value: Buffer): Message => Message.decode(value),
+    responseSerialize: (value: Response): Buffer => Buffer.from(Response.encode(value).finish()),
+    responseDeserialize: (value: Buffer): Response => Response.decode(value),
+  },
 } as const;
 
 export interface BotServiceServer extends UntypedServiceImplementation {
   /** Send message to user */
   send: handleUnaryCall<Message, Response>;
+  /** Get n latest messages for a user */
+  getMessages: handleUnaryCall<GetMessagesRequest, GetMessagesResponse>;
+  /** Notify admin to take human handoff for a user */
+  notifyHandoff: handleUnaryCall<Message, Response>;
 }
 
 export interface BotServiceClient extends Client {
@@ -137,6 +312,35 @@ export interface BotServiceClient extends Client {
     callback: (error: ServiceError | null, response: Response) => void,
   ): ClientUnaryCall;
   send(
+    request: Message,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Response) => void,
+  ): ClientUnaryCall;
+  /** Get n latest messages for a user */
+  getMessages(
+    request: GetMessagesRequest,
+    callback: (error: ServiceError | null, response: GetMessagesResponse) => void,
+  ): ClientUnaryCall;
+  getMessages(
+    request: GetMessagesRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetMessagesResponse) => void,
+  ): ClientUnaryCall;
+  getMessages(
+    request: GetMessagesRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetMessagesResponse) => void,
+  ): ClientUnaryCall;
+  /** Notify admin to take human handoff for a user */
+  notifyHandoff(request: Message, callback: (error: ServiceError | null, response: Response) => void): ClientUnaryCall;
+  notifyHandoff(
+    request: Message,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Response) => void,
+  ): ClientUnaryCall;
+  notifyHandoff(
     request: Message,
     metadata: Metadata,
     options: Partial<CallOptions>,
