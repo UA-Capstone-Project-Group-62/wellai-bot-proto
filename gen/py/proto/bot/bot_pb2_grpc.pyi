@@ -38,8 +38,6 @@ class BotServiceStub:
     """Send message to user"""
     GetMessages: _grpc.UnaryUnaryMultiCallable[_bot_pb2.GetMessagesRequest, _bot_pb2.GetMessagesResponse]
     """Get n latest messages for a user"""
-    NotifyHandoff: _grpc.UnaryUnaryMultiCallable[_bot_pb2.Message, _common_pb2.Response]
-    """Notify admin to take human handoff for a user"""
 
 @_typing.type_check_only
 class BotServiceAsyncStub(BotServiceStub):
@@ -50,8 +48,6 @@ class BotServiceAsyncStub(BotServiceStub):
     """Send message to user"""
     GetMessages: _aio.UnaryUnaryMultiCallable[_bot_pb2.GetMessagesRequest, _bot_pb2.GetMessagesResponse]  # type: ignore[assignment]
     """Get n latest messages for a user"""
-    NotifyHandoff: _aio.UnaryUnaryMultiCallable[_bot_pb2.Message, _common_pb2.Response]  # type: ignore[assignment]
-    """Notify admin to take human handoff for a user"""
 
 class BotServiceServicer(metaclass=_abc_1.ABCMeta):
     """WhatsApp Bot Service"""
@@ -71,13 +67,5 @@ class BotServiceServicer(metaclass=_abc_1.ABCMeta):
         context: _ServicerContext,
     ) -> _typing.Union[_bot_pb2.GetMessagesResponse, _abc.Awaitable[_bot_pb2.GetMessagesResponse]]:
         """Get n latest messages for a user"""
-
-    @_abc_1.abstractmethod
-    def NotifyHandoff(
-        self,
-        request: _bot_pb2.Message,
-        context: _ServicerContext,
-    ) -> _typing.Union[_common_pb2.Response, _abc.Awaitable[_common_pb2.Response]]:
-        """Notify admin to take human handoff for a user"""
 
 def add_BotServiceServicer_to_server(servicer: BotServiceServicer, server: _typing.Union[_grpc.Server, _aio.Server]) -> None: ...

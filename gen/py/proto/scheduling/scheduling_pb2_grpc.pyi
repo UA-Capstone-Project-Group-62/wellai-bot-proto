@@ -4,6 +4,7 @@ isort:skip_file
 """
 
 from collections import abc as _abc
+from google.protobuf import empty_pb2 as _empty_pb2
 from grpc import aio as _aio
 from proto.common import common_pb2 as _common_pb2
 from proto.scheduling import scheduling_pb2 as _scheduling_pb2
@@ -34,8 +35,10 @@ class SchedulingServiceStub:
     def __new__(cls, channel: _grpc.Channel) -> _Self: ...
     @_typing.overload
     def __new__(cls, channel: _aio.Channel) -> SchedulingServiceAsyncStub: ...
-    Schedule: _grpc.UnaryUnaryMultiCallable[_scheduling_pb2.ScheduleRequest, _scheduling_pb2.ScheduleResponse]
+    Schedule: _grpc.UnaryUnaryMultiCallable[_scheduling_pb2.ScheduleRequest, _common_pb2.Response]
     """Schedule an appointment"""
+    ListClinics: _grpc.UnaryUnaryMultiCallable[_empty_pb2.Empty, _scheduling_pb2.ListClinicsResponse]
+    """List all clinics"""
     Query: _grpc.UnaryUnaryMultiCallable[_scheduling_pb2.QueryRequest, _scheduling_pb2.QueryResponse]
     """Query available time slots for a clinic"""
     Cancel: _grpc.UnaryUnaryMultiCallable[_scheduling_pb2.CancelRequest, _common_pb2.Response]
@@ -46,8 +49,10 @@ class SchedulingServiceAsyncStub(SchedulingServiceStub):
     """Scheduling Service"""
 
     def __init__(self, channel: _aio.Channel) -> None: ...
-    Schedule: _aio.UnaryUnaryMultiCallable[_scheduling_pb2.ScheduleRequest, _scheduling_pb2.ScheduleResponse]  # type: ignore[assignment]
+    Schedule: _aio.UnaryUnaryMultiCallable[_scheduling_pb2.ScheduleRequest, _common_pb2.Response]  # type: ignore[assignment]
     """Schedule an appointment"""
+    ListClinics: _aio.UnaryUnaryMultiCallable[_empty_pb2.Empty, _scheduling_pb2.ListClinicsResponse]  # type: ignore[assignment]
+    """List all clinics"""
     Query: _aio.UnaryUnaryMultiCallable[_scheduling_pb2.QueryRequest, _scheduling_pb2.QueryResponse]  # type: ignore[assignment]
     """Query available time slots for a clinic"""
     Cancel: _aio.UnaryUnaryMultiCallable[_scheduling_pb2.CancelRequest, _common_pb2.Response]  # type: ignore[assignment]
@@ -61,8 +66,16 @@ class SchedulingServiceServicer(metaclass=_abc_1.ABCMeta):
         self,
         request: _scheduling_pb2.ScheduleRequest,
         context: _ServicerContext,
-    ) -> _typing.Union[_scheduling_pb2.ScheduleResponse, _abc.Awaitable[_scheduling_pb2.ScheduleResponse]]:
+    ) -> _typing.Union[_common_pb2.Response, _abc.Awaitable[_common_pb2.Response]]:
         """Schedule an appointment"""
+
+    @_abc_1.abstractmethod
+    def ListClinics(
+        self,
+        request: _empty_pb2.Empty,
+        context: _ServicerContext,
+    ) -> _typing.Union[_scheduling_pb2.ListClinicsResponse, _abc.Awaitable[_scheduling_pb2.ListClinicsResponse]]:
+        """List all clinics"""
 
     @_abc_1.abstractmethod
     def Query(

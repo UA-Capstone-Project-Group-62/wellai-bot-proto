@@ -18,37 +18,131 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
+import { Empty } from "../../google/protobuf/empty";
 import { Timestamp } from "../../google/protobuf/timestamp";
 import { Response } from "../common/common";
 
 export const protobufPackage = "wellai_bot.scheduling";
 
-export interface ScheduleRequest {
-  userId: string;
-  clinicId: string;
+export interface TimeRange {
   startTime: Date | undefined;
   endTime: Date | undefined;
 }
 
-export interface ScheduleResponse {
-  scheduleId: string;
+export interface ScheduleRequest {
+  userId: string;
+  userName: string;
+  clinicId: string;
+  time: TimeRange | undefined;
 }
 
 export interface QueryRequest {
-  userId: string;
   clinicId: string;
 }
 
-/** TODO */
 export interface QueryResponse {
+  availableSlots: TimeRange[];
 }
 
 export interface CancelRequest {
-  scheduleId: string;
+  userId: string;
 }
 
+export interface Clinic {
+  clinicId: string;
+  clinicName: string;
+}
+
+export interface ListClinicsResponse {
+  clinics: Clinic[];
+}
+
+function createBaseTimeRange(): TimeRange {
+  return { startTime: undefined, endTime: undefined };
+}
+
+export const TimeRange: MessageFns<TimeRange> = {
+  encode(message: TimeRange, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.startTime !== undefined) {
+      Timestamp.encode(toTimestamp(message.startTime), writer.uint32(10).fork()).join();
+    }
+    if (message.endTime !== undefined) {
+      Timestamp.encode(toTimestamp(message.endTime), writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): TimeRange {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTimeRange();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.startTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.endTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TimeRange {
+    return {
+      startTime: isSet(object.startTime)
+        ? fromJsonTimestamp(object.startTime)
+        : isSet(object.start_time)
+        ? fromJsonTimestamp(object.start_time)
+        : undefined,
+      endTime: isSet(object.endTime)
+        ? fromJsonTimestamp(object.endTime)
+        : isSet(object.end_time)
+        ? fromJsonTimestamp(object.end_time)
+        : undefined,
+    };
+  },
+
+  toJSON(message: TimeRange): unknown {
+    const obj: any = {};
+    if (message.startTime !== undefined) {
+      obj.startTime = message.startTime.toISOString();
+    }
+    if (message.endTime !== undefined) {
+      obj.endTime = message.endTime.toISOString();
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TimeRange>, I>>(base?: I): TimeRange {
+    return TimeRange.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<TimeRange>, I>>(object: I): TimeRange {
+    const message = createBaseTimeRange();
+    message.startTime = object.startTime ?? undefined;
+    message.endTime = object.endTime ?? undefined;
+    return message;
+  },
+};
+
 function createBaseScheduleRequest(): ScheduleRequest {
-  return { userId: "", clinicId: "", startTime: undefined, endTime: undefined };
+  return { userId: "", userName: "", clinicId: "", time: undefined };
 }
 
 export const ScheduleRequest: MessageFns<ScheduleRequest> = {
@@ -56,14 +150,14 @@ export const ScheduleRequest: MessageFns<ScheduleRequest> = {
     if (message.userId !== "") {
       writer.uint32(10).string(message.userId);
     }
+    if (message.userName !== "") {
+      writer.uint32(18).string(message.userName);
+    }
     if (message.clinicId !== "") {
-      writer.uint32(18).string(message.clinicId);
+      writer.uint32(26).string(message.clinicId);
     }
-    if (message.startTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.startTime), writer.uint32(34).fork()).join();
-    }
-    if (message.endTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.endTime), writer.uint32(42).fork()).join();
+    if (message.time !== undefined) {
+      TimeRange.encode(message.time, writer.uint32(34).fork()).join();
     }
     return writer;
   },
@@ -88,6 +182,14 @@ export const ScheduleRequest: MessageFns<ScheduleRequest> = {
             break;
           }
 
+          message.userName = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
           message.clinicId = reader.string();
           continue;
         }
@@ -96,15 +198,7 @@ export const ScheduleRequest: MessageFns<ScheduleRequest> = {
             break;
           }
 
-          message.startTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.endTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.time = TimeRange.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -123,21 +217,17 @@ export const ScheduleRequest: MessageFns<ScheduleRequest> = {
         : isSet(object.user_id)
         ? globalThis.String(object.user_id)
         : "",
+      userName: isSet(object.userName)
+        ? globalThis.String(object.userName)
+        : isSet(object.user_name)
+        ? globalThis.String(object.user_name)
+        : "",
       clinicId: isSet(object.clinicId)
         ? globalThis.String(object.clinicId)
         : isSet(object.clinic_id)
         ? globalThis.String(object.clinic_id)
         : "",
-      startTime: isSet(object.startTime)
-        ? fromJsonTimestamp(object.startTime)
-        : isSet(object.start_time)
-        ? fromJsonTimestamp(object.start_time)
-        : undefined,
-      endTime: isSet(object.endTime)
-        ? fromJsonTimestamp(object.endTime)
-        : isSet(object.end_time)
-        ? fromJsonTimestamp(object.end_time)
-        : undefined,
+      time: isSet(object.time) ? TimeRange.fromJSON(object.time) : undefined,
     };
   },
 
@@ -146,14 +236,14 @@ export const ScheduleRequest: MessageFns<ScheduleRequest> = {
     if (message.userId !== "") {
       obj.userId = message.userId;
     }
+    if (message.userName !== "") {
+      obj.userName = message.userName;
+    }
     if (message.clinicId !== "") {
       obj.clinicId = message.clinicId;
     }
-    if (message.startTime !== undefined) {
-      obj.startTime = message.startTime.toISOString();
-    }
-    if (message.endTime !== undefined) {
-      obj.endTime = message.endTime.toISOString();
+    if (message.time !== undefined) {
+      obj.time = TimeRange.toJSON(message.time);
     }
     return obj;
   },
@@ -164,88 +254,21 @@ export const ScheduleRequest: MessageFns<ScheduleRequest> = {
   fromPartial<I extends Exact<DeepPartial<ScheduleRequest>, I>>(object: I): ScheduleRequest {
     const message = createBaseScheduleRequest();
     message.userId = object.userId ?? "";
+    message.userName = object.userName ?? "";
     message.clinicId = object.clinicId ?? "";
-    message.startTime = object.startTime ?? undefined;
-    message.endTime = object.endTime ?? undefined;
-    return message;
-  },
-};
-
-function createBaseScheduleResponse(): ScheduleResponse {
-  return { scheduleId: "" };
-}
-
-export const ScheduleResponse: MessageFns<ScheduleResponse> = {
-  encode(message: ScheduleResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.scheduleId !== "") {
-      writer.uint32(10).string(message.scheduleId);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ScheduleResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseScheduleResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.scheduleId = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ScheduleResponse {
-    return {
-      scheduleId: isSet(object.scheduleId)
-        ? globalThis.String(object.scheduleId)
-        : isSet(object.schedule_id)
-        ? globalThis.String(object.schedule_id)
-        : "",
-    };
-  },
-
-  toJSON(message: ScheduleResponse): unknown {
-    const obj: any = {};
-    if (message.scheduleId !== "") {
-      obj.scheduleId = message.scheduleId;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ScheduleResponse>, I>>(base?: I): ScheduleResponse {
-    return ScheduleResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ScheduleResponse>, I>>(object: I): ScheduleResponse {
-    const message = createBaseScheduleResponse();
-    message.scheduleId = object.scheduleId ?? "";
+    message.time = (object.time !== undefined && object.time !== null) ? TimeRange.fromPartial(object.time) : undefined;
     return message;
   },
 };
 
 function createBaseQueryRequest(): QueryRequest {
-  return { userId: "", clinicId: "" };
+  return { clinicId: "" };
 }
 
 export const QueryRequest: MessageFns<QueryRequest> = {
   encode(message: QueryRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.userId !== "") {
-      writer.uint32(10).string(message.userId);
-    }
     if (message.clinicId !== "") {
-      writer.uint32(18).string(message.clinicId);
+      writer.uint32(10).string(message.clinicId);
     }
     return writer;
   },
@@ -259,14 +282,6 @@ export const QueryRequest: MessageFns<QueryRequest> = {
       switch (tag >>> 3) {
         case 1: {
           if (tag !== 10) {
-            break;
-          }
-
-          message.userId = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
             break;
           }
 
@@ -284,11 +299,6 @@ export const QueryRequest: MessageFns<QueryRequest> = {
 
   fromJSON(object: any): QueryRequest {
     return {
-      userId: isSet(object.userId)
-        ? globalThis.String(object.userId)
-        : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
       clinicId: isSet(object.clinicId)
         ? globalThis.String(object.clinicId)
         : isSet(object.clinic_id)
@@ -299,9 +309,6 @@ export const QueryRequest: MessageFns<QueryRequest> = {
 
   toJSON(message: QueryRequest): unknown {
     const obj: any = {};
-    if (message.userId !== "") {
-      obj.userId = message.userId;
-    }
     if (message.clinicId !== "") {
       obj.clinicId = message.clinicId;
     }
@@ -313,18 +320,20 @@ export const QueryRequest: MessageFns<QueryRequest> = {
   },
   fromPartial<I extends Exact<DeepPartial<QueryRequest>, I>>(object: I): QueryRequest {
     const message = createBaseQueryRequest();
-    message.userId = object.userId ?? "";
     message.clinicId = object.clinicId ?? "";
     return message;
   },
 };
 
 function createBaseQueryResponse(): QueryResponse {
-  return {};
+  return { availableSlots: [] };
 }
 
 export const QueryResponse: MessageFns<QueryResponse> = {
-  encode(_: QueryResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(message: QueryResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.availableSlots) {
+      TimeRange.encode(v!, writer.uint32(26).fork()).join();
+    }
     return writer;
   },
 
@@ -335,6 +344,14 @@ export const QueryResponse: MessageFns<QueryResponse> = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.availableSlots.push(TimeRange.decode(reader, reader.uint32()));
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -344,32 +361,42 @@ export const QueryResponse: MessageFns<QueryResponse> = {
     return message;
   },
 
-  fromJSON(_: any): QueryResponse {
-    return {};
+  fromJSON(object: any): QueryResponse {
+    return {
+      availableSlots: globalThis.Array.isArray(object?.availableSlots)
+        ? object.availableSlots.map((e: any) => TimeRange.fromJSON(e))
+        : globalThis.Array.isArray(object?.available_slots)
+        ? object.available_slots.map((e: any) => TimeRange.fromJSON(e))
+        : [],
+    };
   },
 
-  toJSON(_: QueryResponse): unknown {
+  toJSON(message: QueryResponse): unknown {
     const obj: any = {};
+    if (message.availableSlots?.length) {
+      obj.availableSlots = message.availableSlots.map((e) => TimeRange.toJSON(e));
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<QueryResponse>, I>>(base?: I): QueryResponse {
     return QueryResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QueryResponse>, I>>(_: I): QueryResponse {
+  fromPartial<I extends Exact<DeepPartial<QueryResponse>, I>>(object: I): QueryResponse {
     const message = createBaseQueryResponse();
+    message.availableSlots = object.availableSlots?.map((e) => TimeRange.fromPartial(e)) || [];
     return message;
   },
 };
 
 function createBaseCancelRequest(): CancelRequest {
-  return { scheduleId: "" };
+  return { userId: "" };
 }
 
 export const CancelRequest: MessageFns<CancelRequest> = {
   encode(message: CancelRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.scheduleId !== "") {
-      writer.uint32(10).string(message.scheduleId);
+    if (message.userId !== "") {
+      writer.uint32(10).string(message.userId);
     }
     return writer;
   },
@@ -386,7 +413,7 @@ export const CancelRequest: MessageFns<CancelRequest> = {
             break;
           }
 
-          message.scheduleId = reader.string();
+          message.userId = reader.string();
           continue;
         }
       }
@@ -400,18 +427,18 @@ export const CancelRequest: MessageFns<CancelRequest> = {
 
   fromJSON(object: any): CancelRequest {
     return {
-      scheduleId: isSet(object.scheduleId)
-        ? globalThis.String(object.scheduleId)
-        : isSet(object.schedule_id)
-        ? globalThis.String(object.schedule_id)
+      userId: isSet(object.userId)
+        ? globalThis.String(object.userId)
+        : isSet(object.user_id)
+        ? globalThis.String(object.user_id)
         : "",
     };
   },
 
   toJSON(message: CancelRequest): unknown {
     const obj: any = {};
-    if (message.scheduleId !== "") {
-      obj.scheduleId = message.scheduleId;
+    if (message.userId !== "") {
+      obj.userId = message.userId;
     }
     return obj;
   },
@@ -421,7 +448,151 @@ export const CancelRequest: MessageFns<CancelRequest> = {
   },
   fromPartial<I extends Exact<DeepPartial<CancelRequest>, I>>(object: I): CancelRequest {
     const message = createBaseCancelRequest();
-    message.scheduleId = object.scheduleId ?? "";
+    message.userId = object.userId ?? "";
+    return message;
+  },
+};
+
+function createBaseClinic(): Clinic {
+  return { clinicId: "", clinicName: "" };
+}
+
+export const Clinic: MessageFns<Clinic> = {
+  encode(message: Clinic, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.clinicId !== "") {
+      writer.uint32(10).string(message.clinicId);
+    }
+    if (message.clinicName !== "") {
+      writer.uint32(18).string(message.clinicName);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Clinic {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseClinic();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.clinicId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.clinicName = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Clinic {
+    return {
+      clinicId: isSet(object.clinicId)
+        ? globalThis.String(object.clinicId)
+        : isSet(object.clinic_id)
+        ? globalThis.String(object.clinic_id)
+        : "",
+      clinicName: isSet(object.clinicName)
+        ? globalThis.String(object.clinicName)
+        : isSet(object.clinic_name)
+        ? globalThis.String(object.clinic_name)
+        : "",
+    };
+  },
+
+  toJSON(message: Clinic): unknown {
+    const obj: any = {};
+    if (message.clinicId !== "") {
+      obj.clinicId = message.clinicId;
+    }
+    if (message.clinicName !== "") {
+      obj.clinicName = message.clinicName;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Clinic>, I>>(base?: I): Clinic {
+    return Clinic.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Clinic>, I>>(object: I): Clinic {
+    const message = createBaseClinic();
+    message.clinicId = object.clinicId ?? "";
+    message.clinicName = object.clinicName ?? "";
+    return message;
+  },
+};
+
+function createBaseListClinicsResponse(): ListClinicsResponse {
+  return { clinics: [] };
+}
+
+export const ListClinicsResponse: MessageFns<ListClinicsResponse> = {
+  encode(message: ListClinicsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.clinics) {
+      Clinic.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListClinicsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListClinicsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.clinics.push(Clinic.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListClinicsResponse {
+    return {
+      clinics: globalThis.Array.isArray(object?.clinics) ? object.clinics.map((e: any) => Clinic.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: ListClinicsResponse): unknown {
+    const obj: any = {};
+    if (message.clinics?.length) {
+      obj.clinics = message.clinics.map((e) => Clinic.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ListClinicsResponse>, I>>(base?: I): ListClinicsResponse {
+    return ListClinicsResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ListClinicsResponse>, I>>(object: I): ListClinicsResponse {
+    const message = createBaseListClinicsResponse();
+    message.clinics = object.clinics?.map((e) => Clinic.fromPartial(e)) || [];
     return message;
   },
 };
@@ -436,8 +607,18 @@ export const SchedulingServiceService = {
     responseStream: false as const,
     requestSerialize: (value: ScheduleRequest): Buffer => Buffer.from(ScheduleRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): ScheduleRequest => ScheduleRequest.decode(value),
-    responseSerialize: (value: ScheduleResponse): Buffer => Buffer.from(ScheduleResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ScheduleResponse => ScheduleResponse.decode(value),
+    responseSerialize: (value: Response): Buffer => Buffer.from(Response.encode(value).finish()),
+    responseDeserialize: (value: Buffer): Response => Response.decode(value),
+  },
+  /** List all clinics */
+  listClinics: {
+    path: "/wellai_bot.scheduling.SchedulingService/ListClinics" as const,
+    requestStream: false as const,
+    responseStream: false as const,
+    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
+    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
+    responseSerialize: (value: ListClinicsResponse): Buffer => Buffer.from(ListClinicsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ListClinicsResponse => ListClinicsResponse.decode(value),
   },
   /** Query available time slots for a clinic */
   query: {
@@ -463,7 +644,9 @@ export const SchedulingServiceService = {
 
 export interface SchedulingServiceServer extends UntypedServiceImplementation {
   /** Schedule an appointment */
-  schedule: handleUnaryCall<ScheduleRequest, ScheduleResponse>;
+  schedule: handleUnaryCall<ScheduleRequest, Response>;
+  /** List all clinics */
+  listClinics: handleUnaryCall<Empty, ListClinicsResponse>;
   /** Query available time slots for a clinic */
   query: handleUnaryCall<QueryRequest, QueryResponse>;
   /** Cancel an appointment */
@@ -474,18 +657,34 @@ export interface SchedulingServiceClient extends Client {
   /** Schedule an appointment */
   schedule(
     request: ScheduleRequest,
-    callback: (error: ServiceError | null, response: ScheduleResponse) => void,
+    callback: (error: ServiceError | null, response: Response) => void,
   ): ClientUnaryCall;
   schedule(
     request: ScheduleRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: ScheduleResponse) => void,
+    callback: (error: ServiceError | null, response: Response) => void,
   ): ClientUnaryCall;
   schedule(
     request: ScheduleRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: ScheduleResponse) => void,
+    callback: (error: ServiceError | null, response: Response) => void,
+  ): ClientUnaryCall;
+  /** List all clinics */
+  listClinics(
+    request: Empty,
+    callback: (error: ServiceError | null, response: ListClinicsResponse) => void,
+  ): ClientUnaryCall;
+  listClinics(
+    request: Empty,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: ListClinicsResponse) => void,
+  ): ClientUnaryCall;
+  listClinics(
+    request: Empty,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: ListClinicsResponse) => void,
   ): ClientUnaryCall;
   /** Query available time slots for a clinic */
   query(

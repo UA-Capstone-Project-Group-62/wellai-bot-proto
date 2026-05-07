@@ -46,11 +46,6 @@ class BotServiceStub(object):
                 request_serializer=proto_dot_bot_dot_bot__pb2.GetMessagesRequest.SerializeToString,
                 response_deserializer=proto_dot_bot_dot_bot__pb2.GetMessagesResponse.FromString,
                 _registered_method=True)
-        self.NotifyHandoff = channel.unary_unary(
-                '/wellai_bot.bot.BotService/NotifyHandoff',
-                request_serializer=proto_dot_bot_dot_bot__pb2.Message.SerializeToString,
-                response_deserializer=proto_dot_common_dot_common__pb2.Response.FromString,
-                _registered_method=True)
 
 
 class BotServiceServicer(object):
@@ -71,13 +66,6 @@ class BotServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def NotifyHandoff(self, request, context):
-        """Notify admin to take human handoff for a user
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_BotServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -90,11 +78,6 @@ def add_BotServiceServicer_to_server(servicer, server):
                     servicer.GetMessages,
                     request_deserializer=proto_dot_bot_dot_bot__pb2.GetMessagesRequest.FromString,
                     response_serializer=proto_dot_bot_dot_bot__pb2.GetMessagesResponse.SerializeToString,
-            ),
-            'NotifyHandoff': grpc.unary_unary_rpc_method_handler(
-                    servicer.NotifyHandoff,
-                    request_deserializer=proto_dot_bot_dot_bot__pb2.Message.FromString,
-                    response_serializer=proto_dot_common_dot_common__pb2.Response.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -152,33 +135,6 @@ class BotService(object):
             '/wellai_bot.bot.BotService/GetMessages',
             proto_dot_bot_dot_bot__pb2.GetMessagesRequest.SerializeToString,
             proto_dot_bot_dot_bot__pb2.GetMessagesResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def NotifyHandoff(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/wellai_bot.bot.BotService/NotifyHandoff',
-            proto_dot_bot_dot_bot__pb2.Message.SerializeToString,
-            proto_dot_common_dot_common__pb2.Response.FromString,
             options,
             channel_credentials,
             insecure,

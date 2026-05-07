@@ -282,16 +282,6 @@ export const BotServiceService = {
     responseSerialize: (value: GetMessagesResponse): Buffer => Buffer.from(GetMessagesResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer): GetMessagesResponse => GetMessagesResponse.decode(value),
   },
-  /** Notify admin to take human handoff for a user */
-  notifyHandoff: {
-    path: "/wellai_bot.bot.BotService/NotifyHandoff" as const,
-    requestStream: false as const,
-    responseStream: false as const,
-    requestSerialize: (value: Message): Buffer => Buffer.from(Message.encode(value).finish()),
-    requestDeserialize: (value: Buffer): Message => Message.decode(value),
-    responseSerialize: (value: Response): Buffer => Buffer.from(Response.encode(value).finish()),
-    responseDeserialize: (value: Buffer): Response => Response.decode(value),
-  },
 } as const;
 
 export interface BotServiceServer extends UntypedServiceImplementation {
@@ -299,8 +289,6 @@ export interface BotServiceServer extends UntypedServiceImplementation {
   send: handleUnaryCall<Message, Response>;
   /** Get n latest messages for a user */
   getMessages: handleUnaryCall<GetMessagesRequest, GetMessagesResponse>;
-  /** Notify admin to take human handoff for a user */
-  notifyHandoff: handleUnaryCall<Message, Response>;
 }
 
 export interface BotServiceClient extends Client {
@@ -332,19 +320,6 @@ export interface BotServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetMessagesResponse) => void,
-  ): ClientUnaryCall;
-  /** Notify admin to take human handoff for a user */
-  notifyHandoff(request: Message, callback: (error: ServiceError | null, response: Response) => void): ClientUnaryCall;
-  notifyHandoff(
-    request: Message,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: Response) => void,
-  ): ClientUnaryCall;
-  notifyHandoff(
-    request: Message,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: Response) => void,
   ): ClientUnaryCall;
 }
 
