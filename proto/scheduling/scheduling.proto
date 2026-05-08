@@ -32,7 +32,8 @@ message CancelRequest {
 
 message Clinic {
 	string clinic_id = 1;
-	string clinic_name = 2;
+	// Additional info about the clinic (e.g. name, address, contact) (format: json string)
+	string clinic_info = 2;
 }
 
 message ListClinicsResponse {
