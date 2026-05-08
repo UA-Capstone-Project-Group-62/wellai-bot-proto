@@ -124,16 +124,17 @@ class Clinic(_message.Message):
     DESCRIPTOR: _descriptor.Descriptor
 
     CLINIC_ID_FIELD_NUMBER: _builtins.int
-    CLINIC_NAME_FIELD_NUMBER: _builtins.int
+    CLINIC_INFO_FIELD_NUMBER: _builtins.int
     clinic_id: _builtins.str
-    clinic_name: _builtins.str
+    clinic_info: _builtins.str
+    """Additional info about the clinic (e.g. name, address, contact) (format: json string)"""
     def __init__(
         self,
         *,
         clinic_id: _builtins.str = ...,
-        clinic_name: _builtins.str = ...,
+        clinic_info: _builtins.str = ...,
     ) -> None: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["clinic_id", b"clinic_id", "clinic_name", b"clinic_name"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["clinic_id", b"clinic_id", "clinic_info", b"clinic_info"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
 Global___Clinic: _TypeAlias = Clinic  # noqa: Y015

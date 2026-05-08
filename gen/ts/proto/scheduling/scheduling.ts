@@ -50,7 +50,8 @@ export interface CancelRequest {
 
 export interface Clinic {
   clinicId: string;
-  clinicName: string;
+  /** Additional info about the clinic (e.g. name, address, contact) (format: json string) */
+  clinicInfo: string;
 }
 
 export interface ListClinicsResponse {
@@ -454,7 +455,7 @@ export const CancelRequest: MessageFns<CancelRequest> = {
 };
 
 function createBaseClinic(): Clinic {
-  return { clinicId: "", clinicName: "" };
+  return { clinicId: "", clinicInfo: "" };
 }
 
 export const Clinic: MessageFns<Clinic> = {
@@ -462,8 +463,8 @@ export const Clinic: MessageFns<Clinic> = {
     if (message.clinicId !== "") {
       writer.uint32(10).string(message.clinicId);
     }
-    if (message.clinicName !== "") {
-      writer.uint32(18).string(message.clinicName);
+    if (message.clinicInfo !== "") {
+      writer.uint32(18).string(message.clinicInfo);
     }
     return writer;
   },
@@ -488,7 +489,7 @@ export const Clinic: MessageFns<Clinic> = {
             break;
           }
 
-          message.clinicName = reader.string();
+          message.clinicInfo = reader.string();
           continue;
         }
       }
@@ -507,10 +508,10 @@ export const Clinic: MessageFns<Clinic> = {
         : isSet(object.clinic_id)
         ? globalThis.String(object.clinic_id)
         : "",
-      clinicName: isSet(object.clinicName)
-        ? globalThis.String(object.clinicName)
-        : isSet(object.clinic_name)
-        ? globalThis.String(object.clinic_name)
+      clinicInfo: isSet(object.clinicInfo)
+        ? globalThis.String(object.clinicInfo)
+        : isSet(object.clinic_info)
+        ? globalThis.String(object.clinic_info)
         : "",
     };
   },
@@ -520,8 +521,8 @@ export const Clinic: MessageFns<Clinic> = {
     if (message.clinicId !== "") {
       obj.clinicId = message.clinicId;
     }
-    if (message.clinicName !== "") {
-      obj.clinicName = message.clinicName;
+    if (message.clinicInfo !== "") {
+      obj.clinicInfo = message.clinicInfo;
     }
     return obj;
   },
@@ -532,7 +533,7 @@ export const Clinic: MessageFns<Clinic> = {
   fromPartial<I extends Exact<DeepPartial<Clinic>, I>>(object: I): Clinic {
     const message = createBaseClinic();
     message.clinicId = object.clinicId ?? "";
-    message.clinicName = object.clinicName ?? "";
+    message.clinicInfo = object.clinicInfo ?? "";
     return message;
   },
 };
