@@ -21,6 +21,8 @@ message ScheduleRequest {
 
 message QueryRequest {
 	string clinic_id = 1;
+	// Number of days from now to query available slots for
+	int32 days = 2;
 }
 message QueryResponse {
 	repeated TimeRange available_slots = 3;
