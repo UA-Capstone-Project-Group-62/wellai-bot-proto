@@ -38,6 +38,8 @@ export interface ScheduleRequest {
 
 export interface QueryRequest {
   clinicId: string;
+  /** Number of days from now to query available slots for */
+  days: number;
 }
 
 export interface QueryResponse {
@@ -263,13 +265,16 @@ export const ScheduleRequest: MessageFns<ScheduleRequest> = {
 };
 
 function createBaseQueryRequest(): QueryRequest {
-  return { clinicId: "" };
+  return { clinicId: "", days: 0 };
 }
 
 export const QueryRequest: MessageFns<QueryRequest> = {
   encode(message: QueryRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.clinicId !== "") {
       writer.uint32(10).string(message.clinicId);
+    }
+    if (message.days !== 0) {
+      writer.uint32(16).int32(message.days);
     }
     return writer;
   },
@@ -289,6 +294,14 @@ export const QueryRequest: MessageFns<QueryRequest> = {
           message.clinicId = reader.string();
           continue;
         }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.days = reader.int32();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -305,6 +318,7 @@ export const QueryRequest: MessageFns<QueryRequest> = {
         : isSet(object.clinic_id)
         ? globalThis.String(object.clinic_id)
         : "",
+      days: isSet(object.days) ? globalThis.Number(object.days) : 0,
     };
   },
 
@@ -312,6 +326,9 @@ export const QueryRequest: MessageFns<QueryRequest> = {
     const obj: any = {};
     if (message.clinicId !== "") {
       obj.clinicId = message.clinicId;
+    }
+    if (message.days !== 0) {
+      obj.days = Math.round(message.days);
     }
     return obj;
   },
@@ -322,6 +339,7 @@ export const QueryRequest: MessageFns<QueryRequest> = {
   fromPartial<I extends Exact<DeepPartial<QueryRequest>, I>>(object: I): QueryRequest {
     const message = createBaseQueryRequest();
     message.clinicId = object.clinicId ?? "";
+    message.days = object.days ?? 0;
     return message;
   },
 };

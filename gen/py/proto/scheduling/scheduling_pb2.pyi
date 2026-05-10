@@ -75,13 +75,17 @@ class QueryRequest(_message.Message):
     DESCRIPTOR: _descriptor.Descriptor
 
     CLINIC_ID_FIELD_NUMBER: _builtins.int
+    DAYS_FIELD_NUMBER: _builtins.int
     clinic_id: _builtins.str
+    days: _builtins.int
+    """Number of days from now to query available slots for"""
     def __init__(
         self,
         *,
         clinic_id: _builtins.str = ...,
+        days: _builtins.int = ...,
     ) -> None: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["clinic_id", b"clinic_id"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["clinic_id", b"clinic_id", "days", b"days"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
 Global___QueryRequest: _TypeAlias = QueryRequest  # noqa: Y015
