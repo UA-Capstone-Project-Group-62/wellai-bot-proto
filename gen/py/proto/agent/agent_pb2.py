@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from proto.common import common_pb2 as proto_dot_common_dot_common__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17proto/agent/agent.proto\x12\x10wellai_bot.agent\x1a\x19proto/common/common.proto\"+\n\x07Message\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\t2Q\n\x0c\x41gentService\x12\x41\n\x07Receive\x12\x19.wellai_bot.agent.Message\x1a\x1b.wellai_bot.common.Responseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17proto/agent/agent.proto\x12\x10wellai_bot.agent\x1a\x19proto/common/common.proto\"+\n\x07Message\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\t2\xa4\x01\n\x0c\x41gentService\x12\x43\n\x07Receive\x12\x19.wellai_bot.agent.Message\x1a\x1b.wellai_bot.common.Response(\x01\x12O\n\x11ReceiveAndRespond\x12\x19.wellai_bot.agent.Message\x1a\x1b.wellai_bot.common.Response(\x01\x30\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,6 +34,6 @@ if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_MESSAGE']._serialized_start=72
   _globals['_MESSAGE']._serialized_end=115
-  _globals['_AGENTSERVICE']._serialized_start=117
-  _globals['_AGENTSERVICE']._serialized_end=198
+  _globals['_AGENTSERVICE']._serialized_start=118
+  _globals['_AGENTSERVICE']._serialized_end=282
 # @@protoc_insertion_point(module_scope)

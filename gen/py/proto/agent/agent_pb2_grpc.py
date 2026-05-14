@@ -36,8 +36,13 @@ class AgentServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.Receive = channel.unary_unary(
+        self.Receive = channel.stream_unary(
                 '/wellai_bot.agent.AgentService/Receive',
+                request_serializer=proto_dot_agent_dot_agent__pb2.Message.SerializeToString,
+                response_deserializer=proto_dot_common_dot_common__pb2.Response.FromString,
+                _registered_method=True)
+        self.ReceiveAndRespond = channel.stream_stream(
+                '/wellai_bot.agent.AgentService/ReceiveAndRespond',
                 request_serializer=proto_dot_agent_dot_agent__pb2.Message.SerializeToString,
                 response_deserializer=proto_dot_common_dot_common__pb2.Response.FromString,
                 _registered_method=True)
@@ -47,8 +52,15 @@ class AgentServiceServicer(object):
     """AI Agent Service
     """
 
-    def Receive(self, request, context):
-        """Receive message from user (send by bot service)
+    def Receive(self, request_iterator, context):
+        """Receive messages from user via client streaming (send by bot service)
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ReceiveAndRespond(self, request_iterator, context):
+        """Bidirectional streaming: receive messages and stream back responses
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -57,8 +69,13 @@ class AgentServiceServicer(object):
 
 def add_AgentServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'Receive': grpc.unary_unary_rpc_method_handler(
+            'Receive': grpc.stream_unary_rpc_method_handler(
                     servicer.Receive,
+                    request_deserializer=proto_dot_agent_dot_agent__pb2.Message.FromString,
+                    response_serializer=proto_dot_common_dot_common__pb2.Response.SerializeToString,
+            ),
+            'ReceiveAndRespond': grpc.stream_stream_rpc_method_handler(
+                    servicer.ReceiveAndRespond,
                     request_deserializer=proto_dot_agent_dot_agent__pb2.Message.FromString,
                     response_serializer=proto_dot_common_dot_common__pb2.Response.SerializeToString,
             ),
@@ -75,7 +92,7 @@ class AgentService(object):
     """
 
     @staticmethod
-    def Receive(request,
+    def Receive(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -85,10 +102,37 @@ class AgentService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
+        return grpc.experimental.stream_unary(
+            request_iterator,
             target,
             '/wellai_bot.agent.AgentService/Receive',
+            proto_dot_agent_dot_agent__pb2.Message.SerializeToString,
+            proto_dot_common_dot_common__pb2.Response.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ReceiveAndRespond(request_iterator,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_stream(
+            request_iterator,
+            target,
+            '/wellai_bot.agent.AgentService/ReceiveAndRespond',
             proto_dot_agent_dot_agent__pb2.Message.SerializeToString,
             proto_dot_common_dot_common__pb2.Response.FromString,
             options,
