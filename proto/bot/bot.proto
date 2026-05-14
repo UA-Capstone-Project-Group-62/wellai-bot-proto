@@ -10,8 +10,21 @@ message Message {
 	string content = 2;
 }
 
+// Request to get latest messages
+message GetMessagesRequest {
+	string user_id = 1;
+	int32 count = 2;
+}
+
+// Response containing latest messages
+message GetMessagesResponse {
+	repeated Message messages = 1;
+}
+
 // WhatsApp Bot Service
 service BotService {
 	// Send message to user
 	rpc Send(Message) returns (wellai_bot.common.Response);
+	// Get n latest messages for a user
+	rpc GetMessages(GetMessagesRequest) returns (GetMessagesResponse);
 }

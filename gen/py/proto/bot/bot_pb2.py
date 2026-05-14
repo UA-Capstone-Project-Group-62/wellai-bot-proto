@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from proto.common import common_pb2 as proto_dot_common_dot_common__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13proto/bot/bot.proto\x12\x0ewellai_bot.bot\x1a\x19proto/common/common.proto\"+\n\x07Message\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\t2J\n\nBotService\x12<\n\x04Send\x12\x17.wellai_bot.bot.Message\x1a\x1b.wellai_bot.common.Responseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13proto/bot/bot.proto\x12\x0ewellai_bot.bot\x1a\x19proto/common/common.proto\"+\n\x07Message\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\t\"4\n\x12GetMessagesRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\r\n\x05\x63ount\x18\x02 \x01(\x05\"@\n\x13GetMessagesResponse\x12)\n\x08messages\x18\x01 \x03(\x0b\x32\x17.wellai_bot.bot.Message2\xa2\x01\n\nBotService\x12<\n\x04Send\x12\x17.wellai_bot.bot.Message\x1a\x1b.wellai_bot.common.Response\x12V\n\x0bGetMessages\x12\".wellai_bot.bot.GetMessagesRequest\x1a#.wellai_bot.bot.GetMessagesResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,6 +34,10 @@ if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_MESSAGE']._serialized_start=66
   _globals['_MESSAGE']._serialized_end=109
-  _globals['_BOTSERVICE']._serialized_start=111
-  _globals['_BOTSERVICE']._serialized_end=185
+  _globals['_GETMESSAGESREQUEST']._serialized_start=111
+  _globals['_GETMESSAGESREQUEST']._serialized_end=163
+  _globals['_GETMESSAGESRESPONSE']._serialized_start=165
+  _globals['_GETMESSAGESRESPONSE']._serialized_end=229
+  _globals['_BOTSERVICE']._serialized_start=232
+  _globals['_BOTSERVICE']._serialized_end=394
 # @@protoc_insertion_point(module_scope)

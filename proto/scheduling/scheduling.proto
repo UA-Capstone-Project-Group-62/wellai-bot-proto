@@ -2,37 +2,52 @@ syntax = "proto3";
 
 package wellai_bot.scheduling;
 
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 import "proto/common/common.proto";
 
-message ScheduleRequest {
-	string user_id = 1;
-	string clinic_id = 2;
-	google.protobuf.Timestamp start_time = 4;
-	google.protobuf.Timestamp end_time = 5;
+message TimeRange {
+	google.protobuf.Timestamp start_time = 1;
+	google.protobuf.Timestamp end_time = 2;
 }
 
-message ScheduleResponse {
-	string schedule_id = 1;
+message ScheduleRequest {
+	string user_id = 1;
+	string user_name = 2;
+	string clinic_id = 3;
+	TimeRange time = 4;
 }
 
 message QueryRequest {
-	string user_id = 1;
-	string clinic_id = 2;
+	string clinic_id = 1;
+	// Number of days from now to query available slots for
+	int32 days = 2;
 }
 message QueryResponse {
-	// TODO
+	repeated TimeRange available_slots = 3;
 }
 
 message CancelRequest {
-	string schedule_id = 1;
+	string user_id = 1;
+}
+
+message Clinic {
+	string clinic_id = 1;
+	// Additional info about the clinic (e.g. name, address, contact) (format: json string)
+	string clinic_info = 2;
+}
+
+message ListClinicsResponse {
+	repeated Clinic clinics = 1;
 }
 
 // Scheduling Service
 service SchedulingService {
 	// Schedule an appointment
-	rpc Schedule(ScheduleRequest) returns (ScheduleResponse);
+	rpc Schedule(ScheduleRequest) returns (wellai_bot.common.Response);
+	// List all clinics
+	rpc ListClinics(google.protobuf.Empty) returns (ListClinicsResponse);
 	// Query available time slots for a clinic
 	rpc Query(QueryRequest) returns (QueryResponse);
 	// Cancel an appointment

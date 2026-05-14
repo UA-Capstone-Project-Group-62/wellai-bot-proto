@@ -22,27 +22,32 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 from proto.common import common_pb2 as proto_dot_common_dot_common__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n!proto/scheduling/scheduling.proto\x12\x15wellai_bot.scheduling\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19proto/common/common.proto\"\x93\x01\n\x0fScheduleRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x11\n\tclinic_id\x18\x02 \x01(\t\x12.\n\nstart_time\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"\'\n\x10ScheduleResponse\x12\x13\n\x0bschedule_id\x18\x01 \x01(\t\"2\n\x0cQueryRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x11\n\tclinic_id\x18\x02 \x01(\t\"\x0f\n\rQueryResponse\"$\n\rCancelRequest\x12\x13\n\x0bschedule_id\x18\x01 \x01(\t2\x91\x02\n\x11SchedulingService\x12[\n\x08Schedule\x12&.wellai_bot.scheduling.ScheduleRequest\x1a\'.wellai_bot.scheduling.ScheduleResponse\x12R\n\x05Query\x12#.wellai_bot.scheduling.QueryRequest\x1a$.wellai_bot.scheduling.QueryResponse\x12K\n\x06\x43\x61ncel\x12$.wellai_bot.scheduling.CancelRequest\x1a\x1b.wellai_bot.common.Responseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n!proto/scheduling/scheduling.proto\x12\x15wellai_bot.scheduling\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19proto/common/common.proto\"i\n\tTimeRange\x12.\n\nstart_time\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"x\n\x0fScheduleRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\x12\x11\n\tclinic_id\x18\x03 \x01(\t\x12.\n\x04time\x18\x04 \x01(\x0b\x32 .wellai_bot.scheduling.TimeRange\"/\n\x0cQueryRequest\x12\x11\n\tclinic_id\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61ys\x18\x02 \x01(\x05\"J\n\rQueryResponse\x12\x39\n\x0f\x61vailable_slots\x18\x03 \x03(\x0b\x32 .wellai_bot.scheduling.TimeRange\" \n\rCancelRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\"0\n\x06\x43linic\x12\x11\n\tclinic_id\x18\x01 \x01(\t\x12\x13\n\x0b\x63linic_info\x18\x02 \x01(\t\"E\n\x13ListClinicsResponse\x12.\n\x07\x63linics\x18\x01 \x03(\x0b\x32\x1d.wellai_bot.scheduling.Clinic2\xd8\x02\n\x11SchedulingService\x12O\n\x08Schedule\x12&.wellai_bot.scheduling.ScheduleRequest\x1a\x1b.wellai_bot.common.Response\x12Q\n\x0bListClinics\x12\x16.google.protobuf.Empty\x1a*.wellai_bot.scheduling.ListClinicsResponse\x12R\n\x05Query\x12#.wellai_bot.scheduling.QueryRequest\x1a$.wellai_bot.scheduling.QueryResponse\x12K\n\x06\x43\x61ncel\x12$.wellai_bot.scheduling.CancelRequest\x1a\x1b.wellai_bot.common.Responseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'proto.scheduling.scheduling_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_SCHEDULEREQUEST']._serialized_start=121
-  _globals['_SCHEDULEREQUEST']._serialized_end=268
-  _globals['_SCHEDULERESPONSE']._serialized_start=270
-  _globals['_SCHEDULERESPONSE']._serialized_end=309
-  _globals['_QUERYREQUEST']._serialized_start=311
-  _globals['_QUERYREQUEST']._serialized_end=361
-  _globals['_QUERYRESPONSE']._serialized_start=363
-  _globals['_QUERYRESPONSE']._serialized_end=378
-  _globals['_CANCELREQUEST']._serialized_start=380
-  _globals['_CANCELREQUEST']._serialized_end=416
-  _globals['_SCHEDULINGSERVICE']._serialized_start=419
-  _globals['_SCHEDULINGSERVICE']._serialized_end=692
+  _globals['_TIMERANGE']._serialized_start=149
+  _globals['_TIMERANGE']._serialized_end=254
+  _globals['_SCHEDULEREQUEST']._serialized_start=256
+  _globals['_SCHEDULEREQUEST']._serialized_end=376
+  _globals['_QUERYREQUEST']._serialized_start=378
+  _globals['_QUERYREQUEST']._serialized_end=425
+  _globals['_QUERYRESPONSE']._serialized_start=427
+  _globals['_QUERYRESPONSE']._serialized_end=501
+  _globals['_CANCELREQUEST']._serialized_start=503
+  _globals['_CANCELREQUEST']._serialized_end=535
+  _globals['_CLINIC']._serialized_start=537
+  _globals['_CLINIC']._serialized_end=585
+  _globals['_LISTCLINICSRESPONSE']._serialized_start=587
+  _globals['_LISTCLINICSRESPONSE']._serialized_end=656
+  _globals['_SCHEDULINGSERVICE']._serialized_start=659
+  _globals['_SCHEDULINGSERVICE']._serialized_end=1003
 # @@protoc_insertion_point(module_scope)

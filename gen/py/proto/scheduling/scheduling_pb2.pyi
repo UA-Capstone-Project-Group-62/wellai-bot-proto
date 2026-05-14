@@ -3,9 +3,11 @@
 isort:skip_file
 """
 
+from collections import abc as _abc
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from google.protobuf.internal import containers as _containers
 import builtins as _builtins
 import sys
 import typing as _typing
@@ -18,15 +20,11 @@ else:
 DESCRIPTOR: _descriptor.FileDescriptor
 
 @_typing.final
-class ScheduleRequest(_message.Message):
+class TimeRange(_message.Message):
     DESCRIPTOR: _descriptor.Descriptor
 
-    USER_ID_FIELD_NUMBER: _builtins.int
-    CLINIC_ID_FIELD_NUMBER: _builtins.int
     START_TIME_FIELD_NUMBER: _builtins.int
     END_TIME_FIELD_NUMBER: _builtins.int
-    user_id: _builtins.str
-    clinic_id: _builtins.str
     @_builtins.property
     def start_time(self) -> _timestamp_pb2.Timestamp: ...
     @_builtins.property
@@ -34,62 +32,78 @@ class ScheduleRequest(_message.Message):
     def __init__(
         self,
         *,
-        user_id: _builtins.str = ...,
-        clinic_id: _builtins.str = ...,
         start_time: _timestamp_pb2.Timestamp | None = ...,
         end_time: _timestamp_pb2.Timestamp | None = ...,
     ) -> None: ...
     _HasFieldArgType: _TypeAlias = _typing.Literal["end_time", b"end_time", "start_time", b"start_time"]  # noqa: Y015
     def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["clinic_id", b"clinic_id", "end_time", b"end_time", "start_time", b"start_time", "user_id", b"user_id"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["end_time", b"end_time", "start_time", b"start_time"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___TimeRange: _TypeAlias = TimeRange  # noqa: Y015
+
+@_typing.final
+class ScheduleRequest(_message.Message):
+    DESCRIPTOR: _descriptor.Descriptor
+
+    USER_ID_FIELD_NUMBER: _builtins.int
+    USER_NAME_FIELD_NUMBER: _builtins.int
+    CLINIC_ID_FIELD_NUMBER: _builtins.int
+    TIME_FIELD_NUMBER: _builtins.int
+    user_id: _builtins.str
+    user_name: _builtins.str
+    clinic_id: _builtins.str
+    @_builtins.property
+    def time(self) -> Global___TimeRange: ...
+    def __init__(
+        self,
+        *,
+        user_id: _builtins.str = ...,
+        user_name: _builtins.str = ...,
+        clinic_id: _builtins.str = ...,
+        time: Global___TimeRange | None = ...,
+    ) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["time", b"time"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["clinic_id", b"clinic_id", "time", b"time", "user_id", b"user_id", "user_name", b"user_name"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
 Global___ScheduleRequest: _TypeAlias = ScheduleRequest  # noqa: Y015
 
 @_typing.final
-class ScheduleResponse(_message.Message):
-    DESCRIPTOR: _descriptor.Descriptor
-
-    SCHEDULE_ID_FIELD_NUMBER: _builtins.int
-    schedule_id: _builtins.str
-    def __init__(
-        self,
-        *,
-        schedule_id: _builtins.str = ...,
-    ) -> None: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["schedule_id", b"schedule_id"]  # noqa: Y015
-    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
-
-Global___ScheduleResponse: _TypeAlias = ScheduleResponse  # noqa: Y015
-
-@_typing.final
 class QueryRequest(_message.Message):
     DESCRIPTOR: _descriptor.Descriptor
 
-    USER_ID_FIELD_NUMBER: _builtins.int
     CLINIC_ID_FIELD_NUMBER: _builtins.int
-    user_id: _builtins.str
+    DAYS_FIELD_NUMBER: _builtins.int
     clinic_id: _builtins.str
+    days: _builtins.int
+    """Number of days from now to query available slots for"""
     def __init__(
         self,
         *,
-        user_id: _builtins.str = ...,
         clinic_id: _builtins.str = ...,
+        days: _builtins.int = ...,
     ) -> None: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["clinic_id", b"clinic_id", "user_id", b"user_id"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["clinic_id", b"clinic_id", "days", b"days"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
 Global___QueryRequest: _TypeAlias = QueryRequest  # noqa: Y015
 
 @_typing.final
 class QueryResponse(_message.Message):
-    """TODO"""
-
     DESCRIPTOR: _descriptor.Descriptor
 
+    AVAILABLE_SLOTS_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def available_slots(self) -> _containers.RepeatedCompositeFieldContainer[Global___TimeRange]: ...
     def __init__(
         self,
+        *,
+        available_slots: _abc.Iterable[Global___TimeRange] | None = ...,
     ) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["available_slots", b"available_slots"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
 Global___QueryResponse: _TypeAlias = QueryResponse  # noqa: Y015
 
@@ -97,14 +111,51 @@ Global___QueryResponse: _TypeAlias = QueryResponse  # noqa: Y015
 class CancelRequest(_message.Message):
     DESCRIPTOR: _descriptor.Descriptor
 
-    SCHEDULE_ID_FIELD_NUMBER: _builtins.int
-    schedule_id: _builtins.str
+    USER_ID_FIELD_NUMBER: _builtins.int
+    user_id: _builtins.str
     def __init__(
         self,
         *,
-        schedule_id: _builtins.str = ...,
+        user_id: _builtins.str = ...,
     ) -> None: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["schedule_id", b"schedule_id"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["user_id", b"user_id"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
 Global___CancelRequest: _TypeAlias = CancelRequest  # noqa: Y015
+
+@_typing.final
+class Clinic(_message.Message):
+    DESCRIPTOR: _descriptor.Descriptor
+
+    CLINIC_ID_FIELD_NUMBER: _builtins.int
+    CLINIC_INFO_FIELD_NUMBER: _builtins.int
+    clinic_id: _builtins.str
+    clinic_info: _builtins.str
+    """Additional info about the clinic (e.g. name, address, contact) (format: json string)"""
+    def __init__(
+        self,
+        *,
+        clinic_id: _builtins.str = ...,
+        clinic_info: _builtins.str = ...,
+    ) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["clinic_id", b"clinic_id", "clinic_info", b"clinic_info"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___Clinic: _TypeAlias = Clinic  # noqa: Y015
+
+@_typing.final
+class ListClinicsResponse(_message.Message):
+    DESCRIPTOR: _descriptor.Descriptor
+
+    CLINICS_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def clinics(self) -> _containers.RepeatedCompositeFieldContainer[Global___Clinic]: ...
+    def __init__(
+        self,
+        *,
+        clinics: _abc.Iterable[Global___Clinic] | None = ...,
+    ) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["clinics", b"clinics"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___ListClinicsResponse: _TypeAlias = ListClinicsResponse  # noqa: Y015

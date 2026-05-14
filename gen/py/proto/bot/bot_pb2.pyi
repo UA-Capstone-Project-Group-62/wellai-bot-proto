@@ -3,8 +3,10 @@
 isort:skip_file
 """
 
+from collections import abc as _abc
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
+from google.protobuf.internal import containers as _containers
 import builtins as _builtins
 import sys
 import typing as _typing
@@ -36,3 +38,43 @@ class Message(_message.Message):
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
 Global___Message: _TypeAlias = Message  # noqa: Y015
+
+@_typing.final
+class GetMessagesRequest(_message.Message):
+    """Request to get latest messages"""
+
+    DESCRIPTOR: _descriptor.Descriptor
+
+    USER_ID_FIELD_NUMBER: _builtins.int
+    COUNT_FIELD_NUMBER: _builtins.int
+    user_id: _builtins.str
+    count: _builtins.int
+    def __init__(
+        self,
+        *,
+        user_id: _builtins.str = ...,
+        count: _builtins.int = ...,
+    ) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["count", b"count", "user_id", b"user_id"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___GetMessagesRequest: _TypeAlias = GetMessagesRequest  # noqa: Y015
+
+@_typing.final
+class GetMessagesResponse(_message.Message):
+    """Response containing latest messages"""
+
+    DESCRIPTOR: _descriptor.Descriptor
+
+    MESSAGES_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def messages(self) -> _containers.RepeatedCompositeFieldContainer[Global___Message]: ...
+    def __init__(
+        self,
+        *,
+        messages: _abc.Iterable[Global___Message] | None = ...,
+    ) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["messages", b"messages"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___GetMessagesResponse: _TypeAlias = GetMessagesResponse  # noqa: Y015

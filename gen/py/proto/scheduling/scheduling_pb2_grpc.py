@@ -3,6 +3,7 @@
 import grpc
 import warnings
 
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from proto.common import common_pb2 as proto_dot_common_dot_common__pb2
 from proto.scheduling import scheduling_pb2 as proto_dot_scheduling_dot_scheduling__pb2
 
@@ -39,7 +40,12 @@ class SchedulingServiceStub(object):
         self.Schedule = channel.unary_unary(
                 '/wellai_bot.scheduling.SchedulingService/Schedule',
                 request_serializer=proto_dot_scheduling_dot_scheduling__pb2.ScheduleRequest.SerializeToString,
-                response_deserializer=proto_dot_scheduling_dot_scheduling__pb2.ScheduleResponse.FromString,
+                response_deserializer=proto_dot_common_dot_common__pb2.Response.FromString,
+                _registered_method=True)
+        self.ListClinics = channel.unary_unary(
+                '/wellai_bot.scheduling.SchedulingService/ListClinics',
+                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                response_deserializer=proto_dot_scheduling_dot_scheduling__pb2.ListClinicsResponse.FromString,
                 _registered_method=True)
         self.Query = channel.unary_unary(
                 '/wellai_bot.scheduling.SchedulingService/Query',
@@ -59,6 +65,13 @@ class SchedulingServiceServicer(object):
 
     def Schedule(self, request, context):
         """Schedule an appointment
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListClinics(self, request, context):
+        """List all clinics
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -84,7 +97,12 @@ def add_SchedulingServiceServicer_to_server(servicer, server):
             'Schedule': grpc.unary_unary_rpc_method_handler(
                     servicer.Schedule,
                     request_deserializer=proto_dot_scheduling_dot_scheduling__pb2.ScheduleRequest.FromString,
-                    response_serializer=proto_dot_scheduling_dot_scheduling__pb2.ScheduleResponse.SerializeToString,
+                    response_serializer=proto_dot_common_dot_common__pb2.Response.SerializeToString,
+            ),
+            'ListClinics': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListClinics,
+                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    response_serializer=proto_dot_scheduling_dot_scheduling__pb2.ListClinicsResponse.SerializeToString,
             ),
             'Query': grpc.unary_unary_rpc_method_handler(
                     servicer.Query,
@@ -124,7 +142,34 @@ class SchedulingService(object):
             target,
             '/wellai_bot.scheduling.SchedulingService/Schedule',
             proto_dot_scheduling_dot_scheduling__pb2.ScheduleRequest.SerializeToString,
-            proto_dot_scheduling_dot_scheduling__pb2.ScheduleResponse.FromString,
+            proto_dot_common_dot_common__pb2.Response.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListClinics(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/wellai_bot.scheduling.SchedulingService/ListClinics',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            proto_dot_scheduling_dot_scheduling__pb2.ListClinicsResponse.FromString,
             options,
             channel_credentials,
             insecure,
